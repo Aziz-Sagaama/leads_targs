@@ -1,25 +1,23 @@
 const express = require('express');
-const db      = require('../config/db');
-const router  = express.Router();
+const db = require('../config/db');
+const router = express.Router();
 
-// GET /api/conversations/:id/messages
-router.get('/:id/messages', async (req, res) => {
-  try {
-    const [messages] = await db.query(
-      'SELECT * FROM messages WHERE conversation_id = ? ORDER BY idMessage ASC',
-      [req.params.id]
-    );
+router.get('/:id/messages',async(req,res)=>{
+  try{
+    const[messages]= await db.query('select * from messages where conversation_id=? order by idMessage desc',[req.params.id]);
     res.json(messages);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  }catch(err){
+    console.error(err);
+    res.status(500).json({error:err.message});
+}});
+router.get('/:id/interactions',async(req,res)=>{
+  try{
+    const[rows]= await db.query('select * from interactions where conversation_id=? order by idInteraction desc',[req.params.id]);
+    res.json(rows);
+  }catch(err){
+    console.error(err);
+    res.status(500).json({error:err.message});
+  }
 });
 
-// GET /api/conversations/:id/interactions
-router.get('/:id/interactions', async (req, res) => {
-  const [rows] = await db.query(
-    'SELECT * FROM interactions WHERE conversation_id = ?',
-    [req.params.id]
-  );
-  res.json(rows);
-});
-
-module.exports = router;
+module.exports=router;
